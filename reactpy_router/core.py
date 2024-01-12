@@ -63,7 +63,7 @@ def router_component(
         return html._(
             ConnectionContext(
                 _route_state_context(element, value=_RouteState(set_location, params)),
-                value=Connection(old_conn.scope, location, old_conn.carrier),
+                value=Connection(old_conn.scope, location, old_conn.local_storage, old_conn.session_storage, old_conn.carrier),
             ),
             _history({"on_change": lambda event: set_location(Location(**event))}),
         )
@@ -81,6 +81,27 @@ def link(*children: VdomChild, to: str, **attributes: Any) -> VdomDict:
         "onClick": lambda event: set_location(Location(**event)),
     }
     return _link(attrs, *children)
+
+def redirect(
+    to: str
+):
+    set_location = _use_route_state().set_location
+    set_location(
+        Location(**{to})
+    )
+
+def localStorage(
+    action: str,
+    item_id: str,
+    item_value: str = None
+):
+    _localStorage(
+        {
+            "action": action,
+            "itemId": item_id,
+            "itemValue": item_value
+        }
+    )
 
 
 def use_params() -> dict[str, Any]:
@@ -123,9 +144,9 @@ def _match_route(
     return None
 
 
-_link, _history = export(
+_link, _history, _redirect, _localStorage = export(
     module_from_file("reactpy-router", file=Path(__file__).parent / "bundle.js"),
-    ("Link", "History"),
+    ("Link", "History", "redirect", "localStorage"),
 )
 
 

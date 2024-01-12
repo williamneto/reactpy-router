@@ -42,3 +42,19 @@ export function Link({ to, onClick, children, ...props }) {
 
   return html`<a href=${to} onClick=${handleClick} ...${props}>${children}</a>`;
 }
+
+export function redirect({ to }) {
+  window.location.href = to
+}
+
+export function localStorage(props) {
+    if (props.action === "getItem") {
+        return window.localStorage.getItem(props.itemId)
+    } else if (props.action === "setItem") {
+        window.localStorage.setItem(
+            props.itemId,
+            props.itemValue
+        )
+    }
+
+}
